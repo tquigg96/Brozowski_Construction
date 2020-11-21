@@ -188,9 +188,9 @@ deriv a One = Zero
 deriv a (Let' b) 
     | a==b = One
     | otherwise = Zero
-                         
+                         -- I need to stop writing the full program without testing
 deriv a (Union' xs) = Union' (map (deriv a) xs)
-deriv a (cat' (x:xs)) = Union' (helper x:xs) where
+deriv a (cat' (x:xs)) = Union' (helper x:xs) whereS
          helper [] = []
          helper (x:xs) = Cat' $ byp (deriv a (x:xs))
 deriv a (Star' r) = Cat'((deriv a r, Star' r))
@@ -200,11 +200,7 @@ deriv a (Star' r) = Cat'((deriv a r, Star' r))
 -- you will have to use another closure process.
 conv :: RegExp' -> FSM RegExp'S
 conv r = (qs, s, fs, d) where
-          qs = uclosure [s] (\r -> map (deriv (simp a) r) sigma) -- need to fix
+          qs = uclosure [simp r] (\r -> map (deriv (simp a) r)| a <- sigma) -- need to fix
           s = simp r
           fs = filter byp qs
-          d q a = simp (deriv a r)
-
-
-
-
+          d qs a = simp (deriv a qs)
